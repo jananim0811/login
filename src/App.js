@@ -1,25 +1,70 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+function App(){
+  const navigate = useNavigate()
+  const[user,setuser]=useState("")
+  const[pass,setpass]=useState("")
+
+function handleuser(evt)
+{
+setuser(evt.target.value)
 }
 
-export default App;
+function handlepass(evt)
+{
+setpass(evt.target.value)
+}
+ 
+function Check(){
+      if (user === "") {
+        alert("Email is required")
+        return
+    }
+
+    if (!user.includes("@")) {
+        alert("Enter a valid email")
+        return
+    }
+
+    if (pass === "") {
+        alert("Password is required")
+        return
+    }
+
+    if (pass.length < 6) {
+        alert("Password must be at least 6 characters")
+        return
+    }
+    var logindetails = axios.post(
+        "http://localhost:3000/login",
+        {
+            username: user,
+            password: pass
+        }
+    )
+    logindetails.then(function(data){
+    if(data.data ===true)
+    {
+      navigate("/success")
+    }
+    else{
+       navigate("/fail")
+    }
+  })
+   .catch(function(error) {
+            console.log(error)
+            alert("Unable to connect to server")
+        })
+}
+
+  return(
+     <div>
+      <input onChange={handleuser} name="username" placeholder="username"></input>
+      <input onChange={handlepass} type="password" placeholder="password"></input>
+      <button onClick={Check}>Login</button>
+    </div>
+  )
+}
+export default App
